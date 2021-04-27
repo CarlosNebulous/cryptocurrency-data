@@ -4,7 +4,7 @@ import pandas as pd
 import cryptocompare
 from tqdm import tqdm
 import numpy as np
-
+from cryptocmd import CmcScraper
 
 def get_filename(from_symbol, to_symbol, exchange, datetime_interval, download_date):
     return '%s_%s_%s_%s_%s.csv' % (from_symbol, to_symbol, exchange, datetime_interval, download_date)
@@ -22,6 +22,12 @@ def download_data(from_symbol, to_symbol, exchange, datetime_interval):
               'limit': 400, 'aggregate': 1}  # this will change the exchange parameter: 'e': exchange}
     request = requests.get(url, params=params)
     data = request.json()
+    return data
+
+
+def download_data_scrapper(from_symbol):
+    scraper = CmcScraper(from_symbol)
+    data = scraper.get_data("json")
     return data
 
 
@@ -89,7 +95,7 @@ if __name__ == '__main__':
             from_symbol = coin['CoinInfo']['Internal']
             name = coin['CoinInfo']['FullName']
             image_url = 'https://www.cryptocompare.com' + coin['CoinInfo']['ImageUrl']
-            data = download_data(from_symbol, to_symbol, 'default', datetime_interval)
+            data = download_data_scrapper(from_symbol)
             df = convert_to_dataframe(data, from_symbol, image_url, name)
             # df = filter_empty_datapoints(df)
             data_frame = pd.concat([data_frame, df])
