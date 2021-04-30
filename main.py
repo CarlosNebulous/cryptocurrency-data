@@ -19,7 +19,7 @@ def download_data(from_symbol, to_symbol, exchange, datetime_interval):
     base_url = 'https://min-api.cryptocompare.com/data/histo'
     url = '%s%s' % (base_url, datetime_interval)
     params = {'fsym': from_symbol, 'tsym': to_symbol,
-              'limit': 400, 'aggregate': 1}  # this will change the exchange parameter: 'e': exchange}
+              'limit': 400, 'aggregate': 1}  # this will change the exchange parameter: {'e': exchange}
     request = requests.get(url, params=params)
     data = request.json()
     return data
