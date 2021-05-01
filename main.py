@@ -6,13 +6,14 @@ from tqdm import tqdm
 import numpy as np
 from cryptocmd import CmcScraper
 
+
 def get_filename(from_symbol, to_symbol, exchange, datetime_interval, download_date):
     return '%s_%s_%s_%s_%s.csv' % (from_symbol, to_symbol, exchange, datetime_interval, download_date)
 
 
 def download_data(from_symbol, to_symbol, exchange, datetime_interval):
     supported_intervals = {'minute', 'hour', 'day'}
-    assert datetime_interval in supported_intervals,\
+    assert datetime_interval in supported_intervals, \
         'datetime_interval should be one of %s' % supported_intervals
     print('Downloading %s trading data for %s %s from %s' %
           (datetime_interval, from_symbol, to_symbol, exchange))
@@ -27,17 +28,16 @@ def download_data(from_symbol, to_symbol, exchange, datetime_interval):
 
 def download_data_scrapper(from_symbol):
     scraper = CmcScraper(from_symbol)
-    data = scraper.get_data("json")
+    data = scraper.get_dataframe()
     return data
 
 
 def convert_to_dataframe(data, symbol, image_url, coin_name):
-    df = pd.json_normalize(data, ['Data'])
-    df['datetime'] = pd.to_datetime(df.time, unit='s')
+    df = data
     df['cryptocurrency'] = symbol
     df['image_url'] = image_url
     df['coin_name'] = coin_name
-    df = df[['datetime', 'low', 'high', 'open', 'close', 'volumefrom', 'volumeto', 'cryptocurrency', 'image_url',
+    df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Market Cap', 'cryptocurrency', 'image_url',
              'coin_name']]
     return df
 
@@ -81,8 +81,8 @@ def get_coins_higher_price(number_coins: int = 200):
 if __name__ == '__main__':
     to_symbol = 'USD'
     datetime_interval = 'day'
-    data_frame = pd.DataFrame(columns=['datetime', 'low', 'high', 'open', 'close', 'volumefrom', 'volumeto',
-                                       'cryptocurrency', 'image_url', 'coin_name'])
+    data_frame = pd.DataFrame(columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Market Cap', 'cryptocurrency',
+                                       'image_url', 'coin_name'])
     crypt_skipped = []
     # Unused function, if better to use the one already built in
     # coins_dict = get_coins_higher_price()
